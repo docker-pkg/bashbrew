@@ -28,33 +28,28 @@ ENV MANIFEST_TOOL_VERSION 1.0.2
 ENV MANIFEST_TOOL_GPG_KEY 27F3EA268A97867EAF0BD05C0F386284C03A1162
 
 RUN set -euxo pipefail; \
-	\
-	export GNUPGHOME="$(mktemp -d)"; \
-	gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "$MANIFEST_TOOL_GPG_KEY"; \
-	\
-	mkdir -p bin; \
-	\
-	for bashbrewArch in $BASHBREW_ARCHES; do \
-		( \
-			goEnv="$(.bashbrew-arch-to-goenv.sh "$bashbrewArch")"; eval "$goEnv"; \
-			srcBin="manifest-tool-$GOOS-$GOARCH"; \
-			if [ "$GOARCH" = 'arm' ]; then [ -n "$GOARM" ]; srcBin="${srcBin}v$GOARM"; fi; \
-			[ "$GOOS" = 'windows' ] && ext='.exe' || ext=; \
-			srcBin="$srcBin$ext"; \
-			targetBin="bin/manifest-tool-$bashbrewArch$ext"; \
-			wget -O "$targetBin.asc" "https://github.com/estesp/manifest-tool/releases/download/v${MANIFEST_TOOL_VERSION}/$srcBin.asc"; \
-			wget -O "$targetBin" "https://github.com/estesp/manifest-tool/releases/download/v${MANIFEST_TOOL_VERSION}/$srcBin"; \
-			gpg --batch --verify "$targetBin.asc" "$targetBin"; \
-			ls -lAFh "$targetBin"*; \
-			file "$targetBin"*; \
-		) \
-	done; \
-	\
-	gpgconf --kill all; \
-	rm -r "$GNUPGHOME"; \
-	\
-	ls -lAFh bin/manifest-tool-*; \
-	file bin/manifest-tool-*
+    export GNUPGHOME="$(mktemp -d)"; \
+    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$MANIFEST_TOOL_GPG_KEY"; \
+    mkdir -p bin; \
+    for bashbrewArch in $BASHBREW_ARCHES; do \
+        ( \
+            goEnv="$(.bashbrew-arch-to-goenv.sh "$bashbrewArch")"; eval "$goEnv"; \
+            srcBin="manifest-tool-$GOOS-$GOARCH"; \
+            if [ "$GOARCH" = 'arm' ]; then [ -n "$GOARM" ]; srcBin="${srcBin}v$GOARM"; fi; \
+            [ "$GOOS" = 'windows' ] && ext='.exe' || ext=; \
+            srcBin="$srcBin$ext"; \
+            targetBin="bin/manifest-tool-$bashbrewArch$ext"; \
+            wget -O "$targetBin.asc" "https://github.com/estesp/manifest-tool/releases/download/v${MANIFEST_TOOL_VERSION}/$srcBin.asc"; \
+            wget -O "$targetBin" "https://github.com/estesp/manifest-tool/releases/download/v${MANIFEST_TOOL_VERSION}/$srcBin"; \
+            gpg --batch --verify "$targetBin.asc" "$targetBin"; \
+            ls -lAFh "$targetBin"*; \
+            file "$targetBin"*; \
+        ) \
+    done; \
+    gpgconf --kill all; \
+    rm -r "$GNUPGHOME"; \
+    ls -lAFh bin/manifest-tool-*; \
+    file bin/manifest-tool-*
 
 COPY go .
 
