@@ -1,10 +1,6 @@
-**
-!architecture/
-!bashbrew.sh
-!cmd/
-!go.mod
-!go.sum
-!manifest/
-!pkg/
-!registry/
-!scripts/
+*.md
+*.sh
+.dockerignore
+Dockerfile*
+go/bin
+!.bashbrew-arch-to-goenv.sh
